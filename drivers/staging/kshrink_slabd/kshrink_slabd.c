@@ -200,11 +200,13 @@ static int __init shrink_async_init(void)
 		pr_err("Failed to start shrink_slabd on node 0\n");
 		ret = PTR_ERR(shrink_slabd_tsk);
 		shrink_slabd_tsk = NULL;
+		unregister_shrink_async_vendor_hooks();
 		return ret;
 	}
 
 	async_shrink_slabd_setup = true;
 
+	pr_info("kshrink_async succeed!\n");
 	return 0;
 }
 
