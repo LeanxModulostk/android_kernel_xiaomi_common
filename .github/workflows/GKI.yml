@@ -6,38 +6,15 @@ on:
       KERNEL_BRANCH:
         description: 'DoraCore Branch'
         required: true
-        default: 'Rebase'
+        default: 'RebaseLean'
         type: choice
         options:
-        - Rebase
+        - RebaseLean
         - lindroid
       KERNEL_GIT:
         description: 'Kernel Source Code'
         required: true
-        default: 'https://github.com/dopaemon/android_kernel_xiaomi_common.git'
-      BUILD_DEVICE:
-        description: 'Device Target'
-        required: true
-        default: 'mayfly'
-        type: choice
-        options:
-        - all
-        - mayfly
-        - cupid
-        - unicorn
-        - zeus
-        - diting
-        - marble
-        - mondrian
-        - thor
-        - zizhan
-        - ziyi
-        - ingres
-        - gki
-      MANIFEST_GIT:
-        description: 'Kernel Manifest Git'
-        required: true
-        default: 'https://github.com/dopaemon/android_kernel_xiaomi_common.git'
+        default: 'https://github.com/LeanxModulostk/android_kernel_xiaomi_common/tree/RebaseLean.git'
       CLANG_PREBUILT:
         description: 'Custom Clang Prebuilt Git'
         required: true
@@ -70,55 +47,13 @@ on:
         - release
 
 jobs:
-  set-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - id: set-matrix
-        shell: bash
-        env:
-          BUILD_DEVICE: ${{ github.event.inputs.BUILD_DEVICE }}
-        run: |
-          if [ "$BUILD_DEVICE" = "mayfly" ]; then
-            matrix='["mayfly"]'
-          elif [ "$BUILD_DEVICE" = "cupid" ]; then
-            matrix='["cupid"]'
-          elif [ "$BUILD_DEVICE" = "zeus" ]; then
-            matrix='["zeus"]'
-          elif [ "$BUILD_DEVICE" = "unicorn" ]; then
-            matrix='["unicorn"]'
-          elif [ "$BUILD_DEVICE" = "diting" ]; then
-            matrix='["diting"]'
-          elif [ "$BUILD_DEVICE" = "marble" ]; then
-            matrix='["marble"]'
-          elif [ "$BUILD_DEVICE" = "mondrian" ]; then
-            matrix='["mondrian"]'
-          elif [ "$BUILD_DEVICE" = "thor" ]; then
-            matrix='["thor"]'
-          elif [ "$BUILD_DEVICE" = "zizhan" ]; then
-            matrix='["zizhan"]'
-          elif [ "$BUILD_DEVICE" = "ziyi" ]; then
-            matrix='["ziyi"]'
-          elif [ "$BUILD_DEVICE" = "ingres" ]; then
-            matrix='["ziyi"]'
-          elif [ "$BUILD_DEVICE" = "ingres" ]; then
-            matrix='["gki"]'
-          elif [ "$BUILD_DEVICE" = "all" ]; then
-            matrix='["mayfly", "cupid", "unicorn", "zeus", "diting", "marble", "mondrian", "thor", "zizhan", "ziyi", "ingres", "gki"]'
-          fi
-
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   create_release:
     runs-on: ubuntu-latest
-
     outputs:
       tag: ${{ steps.set-tag.outputs.tag }}
-
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     permissions:
       contents: write
       discussions: write
@@ -127,7 +62,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set tag as timestamp
+      - name: Set tag
         id: set-tag
         run: echo "tag=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
@@ -143,19 +78,15 @@ jobs:
             Linux: Linux 5.10.y
             Type: GKI
             Developer: @dopaemon
-            Credits: @ArianK16a, @bachnxuan, @Gelbpunkt, @ztc1997, @pzqqt, @KernelToast, @Arter97, @ramabondanp, @Gosth15, @Flopster101, @bheatleyyy, @keosh1, @n08i40k, @ParsaAslaniYC, ...
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
-    needs: [create_release, set-matrix]
+    needs: create_release
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        device: ${{ fromJson(needs.set-matrix.outputs.matrix) }}
-
     env:
+      DEVICE: gki
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     permissions:
@@ -177,23 +108,29 @@ jobs:
           sudo chmod +x /usr/bin/repo
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-          mkdir -p $GITHUB_WORKSPACE/android-kernel && cd $GITHUB_WORKSPACE/android-kernel
+          mkdir -p android-kernel
+          cd android-kernel
+
           repo init --depth=1 --u ${{ github.event.inputs.KERNEL_GIT }} -b manifest
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
           git clone -b build --single-branch https://github.com/dopaemon/android_kernel_xiaomi_common.git build
           rm -rf .git .github .repo common
           rm -rf ./build/_setup_env.sh
           wget -O ./build/_setup_env.sh https://raw.githubusercontent.com/dopaemon/android_kernel_xiaomi_common/refs/heads/master/.github/scripts/_setup_env.sh
           chmod +x ./build/_setup_env.sh
-          git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} --recurse-submodules -j$(nproc --all) --depth=1 --single-branch --no-tags --filter=blob:none ${{ github.event.inputs.KERNEL_GIT }} ./common
+
+          git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} --recurse-submodules --depth=1 --single-branch --no-tags --filter=blob:none ${{ github.event.inputs.KERNEL_GIT }} common
+
           git clone -b lineage-22.2 --single-branch --depth=1 https://github.com/LineageOS/android_kernel_xiaomi_sm8450-modules.git sm8450-modules
           git clone -b lineage-22.2 --single-branch --depth=1 https://github.com/LineageOS/android_kernel_xiaomi_sm8450-devicetrees.git sm8450-devicetrees
+
           if [ "$TARGET" != "Both" ]; then
-             git clone -b master --depth=1 --single-branch ${{ github.event.inputs.ANYKERNEL_GIT }} ./AnyKernel3
+            git clone -b master --depth=1 --single-branch ${{ github.event.inputs.ANYKERNEL_GIT }} AnyKernel3
           else
-             git clone -b volume --depth=1 --single-branch ${{ github.event.inputs.ANYKERNEL_GIT }} ./AnyKernel3
+            git clone -b volume --depth=1 --single-branch ${{ github.event.inputs.ANYKERNEL_GIT }} AnyKernel3
           fi
-          rm -rf ./AnyKernel3/.git
+          rm -rf AnyKernel3/.git
 
       - name: Cache Clang
         id: cache-clang
@@ -201,152 +138,81 @@ jobs:
         with:
           path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
           key: clang-${{ github.event.inputs.CLANG_BRANCH }}
-          restore-keys: |
-            clang-
+          restore-keys: clang-
 
-      - name: Clone Clang if cache missed
+      - name: Clone Clang
         if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
-          git clone -b ${{ github.event.inputs.CLANG_BRANCH }} --depth=1 --single-branch ${{ github.event.inputs.CLANG_PREBUILT }} $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
+          git clone -b ${{ github.event.inputs.CLANG_BRANCH }} --depth=1 --single-branch ${{ github.event.inputs.CLANG_PREBUILT }} android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
 
       - name: Set up ccache
         run: |
           mkdir -p ~/.cache/bazel
-          ccache --version
           ccache --max-size=2G
           ccache --set-config=compression=true
-          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
 
-      - name: Build Selected Devices KSU
-        if: (github.event.inputs.BUILD_TARGET == 'KSU' || github.event.inputs.BUILD_TARGET == 'Both') && github.event.inputs.KERNEL_BRANCH == 'Rebase'
+      - name: Build Kernel (RebaseLean / KSU / NonKSU)
+        if: github.event.inputs.KERNEL_BRANCH == 'RebaseLean'
         run: |
           set -e
-          DEVICE="${{ matrix.device }}"
           TARGET="${{ github.event.inputs.BUILD_TARGET }}"
-          ZIP_NAME=""
+          DEVICE="gki"
 
-          cd $GITHUB_WORKSPACE/android-kernel
-          cd ./common/
+          cd android-kernel/common/
           git reset --hard HEAD
-          rm -rf $GITHUB_WORKSPACE/android-kernel/out/android12-5.10
-          echo "CONFIG_KSU=y" >> arch/arm64/configs/gki_defconfig
+          rm -rf ../out/android12-5.10
 
-          if [ "$DEVICE" != "gki" ]; then
-             cat arch/arm64/configs/vendor/waipio_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/xiaomi_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/"$DEVICE"_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/debugfs.config >> arch/arm64/configs/gki_defconfig
+          if [ "$TARGET" == "KSU" ] || [ "$TARGET" == "Both" ]; then
+            echo "CONFIG_KSU=y" >> arch/arm64/configs/gki_defconfig
+          else
+            echo "CONFIG_KSU=n" >> arch/arm64/configs/gki_defconfig
           fi
 
           (
-             set +e
-             cd ../
-             CC='ccache' LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh -j$(nproc --all) || true
+            set +e
+            cd ../
+            CC='ccache' LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh -j$(nproc --all) || true
           )
-          
-          [ -f "$GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image" ] || { exit 1; }
 
-          # cd $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/
-          # curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux" -o patch
-          # chmod 777 patch
-          # ./patch
-          # rm -rf Image
-          # mv oImage Image
-          
-          cd $GITHUB_WORKSPACE/android-kernel
-          cd ./common/
-          
-          if [ "$TARGET" != "Both" ]; then
-             ZIP_NAME="DoraCore-${DEVICE}-KSU-5.10-A12-${BUILD_DATE}.zip"
-             cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-             cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
-             zip -r9 "$ZIP_NAME" *
-             mv "$ZIP_NAME" $GITHUB_WORKSPACE/
+          [ -f "../out/android12-5.10/dist/Image" ] || exit 1
+
+          cd ../AnyKernel3
+          cp ../out/android12-5.10/dist/Image ./Image
+
+          if [ "$TARGET" == "KSU" ]; then
+            ZIP="DoraCore-gki-KSU-5.10-${BUILD_DATE}.zip"
+          elif [ "$TARGET" == "NonKSU" ]; then
+            ZIP="DoraCore-gki-NonKSU-5.10-${BUILD_DATE}.zip"
           else
-             cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-             cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image-kernelsu
+            ZIP="DoraCore-gki-5.10-${BUILD_DATE}.zip"
           fi
 
-      - name: Build Selected Devices NonKSU
-        if: (github.event.inputs.BUILD_TARGET == 'NonKSU' || github.event.inputs.BUILD_TARGET == 'Both') && github.event.inputs.KERNEL_BRANCH == 'Rebase'
-        run: |
-          set -e
-          DEVICE="${{ matrix.device }}"
-          TARGET="${{ github.event.inputs.BUILD_TARGET }}"
-          ZIP_NAME=""
-
-          cd $GITHUB_WORKSPACE/android-kernel
-          cd ./common/
-          git reset --hard HEAD
-          rm -rf $GITHUB_WORKSPACE/android-kernel/out/android12-5.10
-          echo "CONFIG_KSU=n" >> arch/arm64/configs/gki_defconfig
-
-          if [ "$DEVICE" != "gki" ]; then
-             cat arch/arm64/configs/vendor/waipio_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/xiaomi_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/"$DEVICE"_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/debugfs.config >> arch/arm64/configs/gki_defconfig
-          fi
-
-          (
-             set +e
-             cd ../
-             CC='ccache' LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh -j$(nproc --all) || true
-          )
-          
-          [ -f "$GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image" ] || { exit 1; }
-
-          if [ "$TARGET" != "Both" ]; then
-             ZIP_NAME="DoraCore-${DEVICE}-NonKSU-5.10-A12-${BUILD_DATE}.zip"
-             cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-             cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
-             zip -r9 "$ZIP_NAME" *
-             mv "$ZIP_NAME" $GITHUB_WORKSPACE/
-          else
-             cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-             cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image-standard
-          fi
+          zip -r9 "$ZIP" *
+          mv "$ZIP" $GITHUB_WORKSPACE/
 
       - name: Build Lindroid Kernel
         if: github.event.inputs.KERNEL_BRANCH == 'lindroid'
         run: |
           set -e
-          DEVICE="${{ matrix.device }}"
-          TARGET="${{ github.event.inputs.BUILD_TARGET }}"
-          ZIP_NAME=""
+          DEVICE="gki"
 
-          cd $GITHUB_WORKSPACE/android-kernel
-          cd ./common/
+          cd android-kernel/common/
           git reset --hard HEAD
-          rm -rf $GITHUB_WORKSPACE/android-kernel/out/android12-5.10
-
-          if [ "$DEVICE" != "gki" ]; then
-             cat arch/arm64/configs/vendor/waipio_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/xiaomi_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/"$DEVICE"_GKI.config >> arch/arm64/configs/gki_defconfig
-             cat arch/arm64/configs/vendor/debugfs.config >> arch/arm64/configs/gki_defconfig
-          fi
+          rm -rf ../out/android12-5.10
 
           cd ../
           CC='ccache' LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh -j$(nproc --all) || true
-          [ -f "$GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image" ] || { exit 1; }
 
-          ZIP_NAME="DoraCore-${DEVICE}-LinDroid-5.10-A12-${BUILD_DATE}.zip"
-          cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-          cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
-          zip -r9 "$ZIP_NAME" *
-          mv "$ZIP_NAME" $GITHUB_WORKSPACE/
+          [ -f "../out/android12-5.10/dist/Image" ] || exit 1
 
-      - name: Create Flashable Both Image
-        if: github.event.inputs.BUILD_TARGET == 'Both' && github.event.inputs.KERNEL_BRANCH != 'lindroid'
-        run: |
-          DEVICE="${{ matrix.device }}"
-          ZIP_NAME="DoraCore-${DEVICE}-5.10-A12-${BUILD_DATE}.zip"
-          cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
-          zip -r9 "$ZIP_NAME" *
-          mv "$ZIP_NAME" $GITHUB_WORKSPACE/
+          cd AnyKernel3
+          cp ../out/android12-5.10/dist/Image ./Image
+          ZIP="DoraCore-gki-LinDroid-5.10-${BUILD_DATE}.zip"
 
-      - name: Upload to GitHub Release
+          zip -r9 "$ZIP" *
+          mv "$ZIP" $GITHUB_WORKSPACE/
+
+      - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.create_release.outputs.tag }}
