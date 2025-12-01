@@ -18,7 +18,7 @@ on:
       BUILD_DEVICE:
         description: 'Device Target'
         required: true
-        default: 'mayfly'
+        default: 'gki'
         type: choice
         options:
         - all
@@ -62,7 +62,7 @@ on:
       RELEASE:
         description: 'Status Release'
         required: true
-        default: 'draft'
+        default: 'prerelease'
         type: choice
         options:
         - draft
