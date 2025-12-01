@@ -37,7 +37,7 @@ on:
       MANIFEST_GIT:
         description: 'Kernel Manifest Git'
         required: true
-        default: 'https://github.com/dopaemon/android_kernel_xiaomi_common.git'
+        default: 'https://github.com/LeanxModulostk/android_kernel_xiaomi_common.git'
       CLANG_PREBUILT:
         description: 'Custom Clang Prebuilt Git'
         required: true
@@ -101,8 +101,8 @@ jobs:
           elif [ "$BUILD_DEVICE" = "ziyi" ]; then
             matrix='["ziyi"]'
           elif [ "$BUILD_DEVICE" = "ingres" ]; then
-            matrix='["ziyi"]'
-          elif [ "$BUILD_DEVICE" = "ingres" ]; then
+            matrix='["ingres"]'
+          elif [ "$BUILD_DEVICE" = "gki" ]; then
             matrix='["gki"]'
           elif [ "$BUILD_DEVICE" = "all" ]; then
             matrix='["mayfly", "cupid", "unicorn", "zeus", "diting", "marble", "mondrian", "thor", "zizhan", "ziyi", "ingres", "gki"]'
@@ -180,10 +180,10 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/android-kernel && cd $GITHUB_WORKSPACE/android-kernel
           repo init --depth=1 --u ${{ github.event.inputs.KERNEL_GIT }} -b manifest
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-          git clone -b build --single-branch https://github.com/dopaemon/android_kernel_xiaomi_common.git build
+          git clone -b build --single-branch https://github.com/LeanxModulostk/android_kernel_xiaomi_common.git build
           rm -rf .git .github .repo common
           rm -rf ./build/_setup_env.sh
-          wget -O ./build/_setup_env.sh https://raw.githubusercontent.com/dopaemon/android_kernel_xiaomi_common/refs/heads/master/.github/scripts/_setup_env.sh
+          wget -O ./build/_setup_env.sh https://raw.githubusercontent.com/LeanxModulostk/android_kernel_xiaomi_common/refs/heads/master/.github/scripts/_setup_env.sh
           chmod +x ./build/_setup_env.sh
           git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} --recurse-submodules -j$(nproc --all) --depth=1 --single-branch --no-tags --filter=blob:none ${{ github.event.inputs.KERNEL_GIT }} ./common
           git clone -b lineage-22.2 --single-branch --depth=1 https://github.com/LineageOS/android_kernel_xiaomi_sm8450-modules.git sm8450-modules
