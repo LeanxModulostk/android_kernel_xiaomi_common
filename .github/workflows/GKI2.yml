@@ -196,7 +196,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
-          key: clang-webbx
+          key: clang-weebx
           restore-keys: |
             clang-weebx
 
