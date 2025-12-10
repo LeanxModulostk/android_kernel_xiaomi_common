@@ -196,18 +196,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
-          key: clang-${{ github.event.inputs.CLANG_BRANCH }}
+          key: clang-webbx
           restore-keys: |
-            clang-
+            clang-weebx
 
       - name: Clone Clang if cache missed
         if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
           mkdir -p $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
           cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/
-          aria2c -s16 -x16 -k1M ${{ github.event.inputs.CLANG_PREBUILT }}
-          tar -xvf Clang-22.0.0git-20250928.tar.gz
-          rm -rf Clang-22.0.0git-20250928.tar.gz
+          aria2c -s16 -x16 -k1M https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz
+          tar -xvf WeebX-Clang-19.1.5.tar.gz
+          rm -rf WeebX-Clang-19.1.5.tar.gz
 
       - name: Set up ccache
         run: |
