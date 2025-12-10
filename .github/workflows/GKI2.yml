@@ -195,7 +195,7 @@ jobs:
         id: cache-clang
         uses: actions/cache@v4
         with:
-          path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
+          path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
           key: clang-weebx
           restore-keys: |
             clang-weebx
@@ -206,8 +206,8 @@ jobs:
           mkdir -p $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
           cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
           aria2c -s16 -x16 -k1M https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz -o WeebX-Clang-19.1.5.tar.gz
-          mkdir -p clang-weebx
-          tar -xvf WeebX-Clang-19.1.5.tar.gz -C clang-weebx
+          mkdir -p clang-r416183b
+          tar -xvf WeebX-Clang-19.1.5.tar.gz -C clang-r416183b
           rm -rf WeebX-Clang-19.1.5.tar.gz
 
       - name: Set up ccache
