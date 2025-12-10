@@ -204,10 +204,11 @@ jobs:
         if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
           mkdir -p $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
-          cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/
-          aria2c -s16 -x16 -k1M https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz
-          tar -xvf WeebX-Clang-19.1.5.tar.gz
-          rm -rf WeebX-Clang-19.1.5.tar.gz
+    cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
+    aria2c -s16 -x16 -k1M https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz -o WeebX-Clang-19.1.5.tar.gz
+    mkdir -p clang-weebx
+    tar -xvf WeebX-Clang-19.1.5.tar.gz -C clang-weebx
+    rm -f WeebX-Clang-19.1.5.tar.gz
 
       - name: Set up ccache
         run: |
