@@ -1,4 +1,4 @@
-name: GKI | DoraCore Kernel Build
+name: GKI | DoraCore Kernel Build Fix
 
 on:
   workflow_dispatch:
