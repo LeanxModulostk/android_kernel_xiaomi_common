@@ -1,4 +1,4 @@
-name: GKI2 | DoraCore Kernel Build
+name: GKI2 | DoraCore Kernel Build [Clang Weebx]
 
 on:
   workflow_dispatch:
@@ -257,7 +257,7 @@ jobs:
         id: cache-clang
         uses: actions/cache@v4
         with:
-          path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
+          path: android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
           key: clang-${{ github.event.inputs.KERNEL_BRANCH }}
           restore-keys: |
             clang-
@@ -265,13 +265,13 @@ jobs:
       - name: Clone Clang if cache missed
         if: steps.cache-clang.outputs.cache-hit != 'true'
         run: |
-          # git clone -b ${{ github.event.inputs.CLANG_BRANCH }} --depth=1 --single-branch ${{ github.event.inputs.CLANG_PREBUILT }} $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
+          # git clone -b ${{ github.event.inputs.CLANG_BRANCH }} --depth=1 --single-branch ${{ github.event.inputs.CLANG_PREBUILT }} $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
           # git clone -b 21 \
               # --single-branch \
               # --depth=1 \
               # --no-tags \
               # https://gitlab.com/clangsantoni/zyc_clang.git \
-              # $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b
+              # $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx
           mkdir -p $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86
           cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/
           aria2c -s16 -x16 -k1M https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-19.1.5-release/WeebX-Clang-19.1.5.tar.gz
@@ -279,17 +279,17 @@ jobs:
           rm -rf WeebX-Clang-19.1.5.tar.gz
           # cd $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/
           # aria2c -s16 -x16 -k1M https://github.com/cctv18/oneplus_sm8650_toolchain/releases/download/LLVM-Clang20-r547379/clang-r547379.zip -o clang.zip &&
-          # unzip -q clang.zip -d clang-r416183b
+          # unzip -q clang.zip -d clang-weebx
           # rm -rf clang.zip
-          # git clone -b 21 --single-branch --depth=1 https://gitlab.com/vantoman/playground-clang.git clang-r416183b
+          # git clone -b 21 --single-branch --depth=1 https://gitlab.com/vantoman/playground-clang.git clang-weebx
 
       - name: Setup Enviroment
         run: |
-          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"
+          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/bin:$PATH"
           export PATH="${{ github.workspace }}/android-kernel/prebuilts/build-tools/bin:$PATH"
-          # echo 'PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"' >> $GITHUB_ENV
+          # echo 'PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/bin:$PATH"' >> $GITHUB_ENV
           # echo 'PATH="${{ github.workspace }}/android-kernel/prebuilts/build-tools/bin:$PATH"' >> $GITHUB_ENV
-          CLANG_DIR="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin"
+          CLANG_DIR="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/bin"
           CLANG_VERSION="$($CLANG_DIR/clang --version | head -n 1)"
           LLD_VERSION="$($CLANG_DIR/ld.lld --version | head -n 1)"
           echo "Prebuilts Infomation:"
@@ -357,7 +357,7 @@ jobs:
           export CCACHE_MAXSIZE="3G"
           export KERNEL_USE_CCACHE=1
 
-          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"
+          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/bin:$PATH"
           export PATH="${{ github.workspace }}/android-kernel/prebuilts/build-tools/bin:$PATH"
           export PRELOAD_LIBS="$GITHUB_WORKSPACE/android-kernel/prebuilts/build-tools/lib64/libfakestat.so $GITHUB_WORKSPACE/android-kernel/prebuilts/build-tools/lib64/libfaketimeMT.so"
 
@@ -395,7 +395,7 @@ jobs:
           echo 'export FAKETIME="'$FAKETIME'"' >> test-wrapper.sh
           echo 'echo ">>> Wrapper check enviroment."' >> test-wrapper.sh
           echo 'exec "$@"' >> test-wrapper.sh
-          chmod +x test-wrapper.sh
+          chmod +x test-wrapper.sh 
           ./test-wrapper.sh date
           ./test-wrapper.sh stat ./Makefile
           chmod +x cc-wrapper ld-wrapper
@@ -468,7 +468,7 @@ jobs:
           export CCACHE_MAXSIZE="3G"
           export KERNEL_USE_CCACHE=1
 
-          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b/bin:$PATH"
+          export PATH="${{ github.workspace }}/android-kernel/prebuilts-master/clang/host/linux-x86/clang-weebx/bin:$PATH"
           export PATH="${{ github.workspace }}/android-kernel/prebuilts/build-tools/bin:$PATH"
           export PRELOAD_LIBS="$GITHUB_WORKSPACE/android-kernel/prebuilts/build-tools/lib64/libfakestat.so $GITHUB_WORKSPACE/android-kernel/prebuilts/build-tools/lib64/libfaketimeMT.so"
 
