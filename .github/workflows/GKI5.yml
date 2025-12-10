@@ -1,4 +1,4 @@
-name: GKI | DoraCore Kernel Build Fix
+name: GKI | DoraCore Kernel Build
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ on:
         required: true
         default: 'https://github.com/LeanxModulostk/android_kernel_xiaomi_common.git'
       CLANG_PREBUILT:
-        description: 'Custom rm -rf $GITHUB_WORKSPACE/android-kernel/prebuilts-master/clang/host/linux-x86/clang-r416183b a Prebuilt Git'
+        description: 'Custom Clang Prebuilt Git'
         required: true
         default: 'https://gitlab.com/vermouth/android_prebuilts_clang_host_linux-x86_clang-r536225.git'
       CLANG_BRANCH:
