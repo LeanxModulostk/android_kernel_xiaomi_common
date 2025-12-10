@@ -1,0 +1,12 @@
+name: Clear caches manually
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cache-clear:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: easimon/wipe-cache@main
