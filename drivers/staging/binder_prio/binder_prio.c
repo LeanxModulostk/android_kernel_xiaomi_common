@@ -23,10 +23,7 @@ static const char *task_name[] = {
 	"com.miui.home",
 	".globallauncher",  // com.mi.android.globallauncher
 	"ndroid.systemui",  // com.android.systemui
-    "surfaceflinger",
-	"UnityMain",
-	"UnityGfxDeviceW",
-	"lofduty.shooter",
+	// "surfaceflinger",
 	"cameraserver",
 	"rsonalassistant",  // com.miui.personalassistant
 };
