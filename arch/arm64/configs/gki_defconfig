@@ -72,7 +72,7 @@ CONFIG_SETEND_EMULATION=y
 CONFIG_RANDOMIZE_BASE=y
 # CONFIG_RANDOMIZE_MODULE_REGION_FULL is not set
 # CONFIG_STACKPROTECTOR_PER_TASK is not set
-CONFIG_CMDLINE="stack_depot_disable=on kasan=off cgroup_disable=pressure cgroup.memory=nokmem noirqdebug nokaslr mitigations=off iommu.strict=0 iommu.passthrough=1 audit=0 norandmaps quiet tsc=nowatchdog nmi_watchdog=0 nowatchdog mute_console"
+CONFIG_CMDLINE="stack_depot_disable=on kasan=off cgroup_disable=pressure cgroup.memory=nokmem noirqdebug nokaslr mitigations=off iommu.strict=0 iommu.passthrough=1 audit=0 norandmaps quiet tsc=nowatchdog nmi_watchdog=0 nowatchdog mute_console nodebugmon"
 CONFIG_CMDLINE_EXTEND=y
 # CONFIG_DMI is not set
 CONFIG_PM_WAKELOCKS=y
