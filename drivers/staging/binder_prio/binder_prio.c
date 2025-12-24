@@ -26,6 +26,7 @@ static const char *task_name[] = {
 	// "surfaceflinger",
 	"cameraserver",
 	"rsonalassistant",  // com.miui.personalassistant
+	"lofduty.shooter",  // com.activision.callofduty.shooter
 };
 
 static int to_userspace_prio(int policy, int kernel_priority) {
@@ -50,6 +51,10 @@ static bool set_binder_rt_task(struct binder_transaction *t) {
 		}
 
 		if (!strncmp(from_task_gl_comm, "com.miui.home", strlen("com.miui.home")) &&
+		    !strncmp(from_task_comm, "RenderThread", strlen("RenderThread")) &&
+		    !strncmp(t->to_proc->tsk->comm, "surfaceflinger", strlen("surfaceflinger")))
+			goto yes_and_exit;
+		if (!strncmp(from_task_gl_comm, "lofduty.shooter", strlen("lofduty.shooter")) &&
 		    !strncmp(from_task_comm, "RenderThread", strlen("RenderThread")) &&
 		    !strncmp(t->to_proc->tsk->comm, "surfaceflinger", strlen("surfaceflinger")))
 			goto yes_and_exit;
