@@ -10,6 +10,7 @@ on:
         type: choice
         options:
         - Rebase
+        - RebaseBeta
         - lindroid
       KERNEL_GIT:
         description: 'Kernel Source Code'
