@@ -3888,7 +3888,7 @@ static void inc_max_seq(struct lruvec *lruvec, bool can_swap, bool full_scan)
 	int type, zone;
 	struct lru_gen_struct *lrugen = &lruvec->lrugen;
 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
-restart:
+
 	spin_lock_irq(&pgdat->lru_lock);
 
 	VM_WARN_ON_ONCE(!seq_is_valid(lruvec));
@@ -3899,12 +3899,11 @@ restart:
 
 		VM_WARN_ON_ONCE(!full_scan && (type == LRU_GEN_FILE || can_swap));
 
-		if (inc_min_seq(lruvec, type, can_swap))
-			continue;
-
-		spin_unlock_irq(&pgdat->lru_lock);
-		cond_resched();
-		goto restart;
+		while (!inc_min_seq(lruvec, type, can_swap)) {
+			spin_unlock_irq(&pgdat->lru_lock);
+			cond_resched();
+			spin_lock_irq(&pgdat->lru_lock);
+		}
 	}
 
 	/*
