@@ -628,13 +628,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
 	if (q->nr_hw_queues != 1)
 		return NULL;
 
-	return elevator_get(q,
-#ifdef CONFIG_MQ_IOSCHED_SSG
-	"ssg",
-#else
-	"kyber",
-#endif
-	false);
+	return elevator_get(q, "kyber", false);
 }
 
 /*
@@ -687,8 +681,6 @@ void elevator_init_mq(struct request_queue *q)
 		e = elevator_get(q, "kyber", false);
 	} else if (IS_ENABLED(CONFIG_MQ_KYBER_DEFAULT)) {
 		e = elevator_get(q, "kyber", false);
-	} else if (IS_ENABLED(CONFIG_MQ_SSG_DEFAULT)) {
-		e = elevator_get(q, "ssg", false);
 	} else if (!q->required_elevator_features)
 		e = elevator_get_default(q);
 	else
