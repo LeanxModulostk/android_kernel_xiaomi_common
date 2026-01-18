@@ -632,7 +632,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
 #ifdef CONFIG_MQ_IOSCHED_SSG
 	"ssg",
 #else
-	"mq-deadline",
+	"kyber",
 #endif
 	false);
 }
