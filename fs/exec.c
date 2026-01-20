@@ -64,7 +64,6 @@
 #include <linux/compat.h>
 #include <linux/vmalloc.h>
 #include <linux/io_uring.h>
-#include <linux/ksm.h>
 
 #include <linux/uaccess.h>
 #ifdef CONFIG_KSU_SUSFS_SUS_SU
