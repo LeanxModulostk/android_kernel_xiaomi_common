@@ -38,6 +38,13 @@ static const u32 pelt8_runnable_avg_yN_inv[] __maybe_unused = {
 #define PELT8_LOAD_AVG_PERIOD 8
 #define PELT8_LOAD_AVG_MAX 12326
 
+static const u32 pelt4_runnable_avg_yN_inv[] __maybe_unused = {
+        0xffffffff,0xd744fcc9,0xb504f333,0x9837f050,
+};
+
+#define PELT8_LOAD_AVG_PERIOD 4
+#define PELT8_LOAD_AVG_MAX 6430
+
 extern const u32 *pelt_runnable_avg_yN_inv;
 extern int pelt_load_avg_period;
 extern int pelt_load_avg_max;
