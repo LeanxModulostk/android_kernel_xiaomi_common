@@ -180,9 +180,9 @@ struct bbr_context {
 };
 
 /* Window length of min_rtt filter (in sec): */
-static const u32 bbr_min_rtt_win_sec = 10;
+static const u32 bbr_min_rtt_win_sec = 5;
 /* Minimum time (in ms) spent at bbr_cwnd_min_target in BBR_PROBE_RTT mode: */
-static const u32 bbr_probe_rtt_mode_ms = 200;
+static const u32 bbr_probe_rtt_mode_ms = 120;
 /* Window length of probe_rtt_min_us filter (in ms), and consequently the
  * typical interval between PROBE_RTT mode entries. The default is 5000ms.
  * Note that bbr_probe_rtt_win_ms must be <= bbr_min_rtt_win_sec * MSEC_PER_SEC
@@ -286,7 +286,7 @@ static const u32 bbr_ecn_factor = BBR_UNIT * 1 / 3;	 /* 1/3 = 33% */
 /* Estimate bw probing has gone too far if CE ratio exceeds this threshold.
  * Scaled by BBR_SCALE. Disabled when 0.
  */
-static const u32 bbr_ecn_thresh = BBR_UNIT * 1 / 2;  /* 1/2 = 50% */
+static const u32 bbr_ecn_thresh = BBR_UNIT * 1 / 3;  /* 1/3 = 33% */
 
 /* If non-zero, if in a cycle with no losses but some ECN marks, after ECN
  * clears then make the first round's increment to inflight_hi the following
@@ -338,10 +338,10 @@ static const u32 bbr_bw_probe_rand_rounds = 2;
  * We aim to be fair with Reno/CUBIC up to an inter-loss time epoch of at least:
  *  BDP*RTT = 25Mbps * .030sec /(1514bytes) * 0.030sec = 1.9 secs
  */
-static const u32 bbr_bw_probe_base_us = 2 * USEC_PER_SEC;  /* 2 secs */
+static const u32 bbr_bw_probe_base_us = 1900000;  /* 1.9 secs */
 
 /* Use BBR-native probes spread over this many usec: */
-static const u32 bbr_bw_probe_rand_us = 1 * USEC_PER_SEC;  /* 1 secs */
+static const u32 bbr_bw_probe_rand_us = 500000;  /* 0.5 secs */
 
 /* Use fast path if app-limited, no loss/ECN, and target cwnd was reached? */
 static const bool bbr_fast_path = true;
