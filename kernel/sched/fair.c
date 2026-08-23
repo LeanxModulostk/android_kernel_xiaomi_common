@@ -43,32 +43,6 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_stat_runtime);
  * (BORE default: 24ms constant, units: nanoseconds)
  * (CFS  default: 6ms * (1 + ilog(ncpus)), units: nanoseconds)
  */
- *
- * 16ms, unscaled. These three knobs (latency, min_granularity,
- * wakeup_granularity) used to be keyed on CONFIG_SCHED_BORE, which made a
- * BORE build and a non-BORE build differ in preemption granularity as well as
- * in the burst algorithm - so any A/B between them measured both at once and
- * could not attribute a regression to either. They are device tuning, not
- * BORE tuning, so they are now single values.
- *
- * Direction matters here. The BORE branch used to set 6ms/0.75ms, i.e. finer
- * granularity than plain CFS, which is backwards: stock CFS on an 8-core
- * applies TUNABLESCALING_LOG for an effective 24ms/3ms, so that branch ran 4x
- * more forced tick preemptions than the kernels it was being compared against
- * - and upstream BORE moves the other way still (24ms/3ms constant), because
- * its whole thesis is to stop chopping every task finely and let the burst
- * score decide who deserves the CPU instead. Paying fine-grained preemption
- * on top of BORE buys the context-switch and cache-refill cost of both models
- * and the benefit of neither.
- *
- * 16ms at sched_nr_latency=8 gives 2ms min slices, which keeps 4 preemption
- * windows per 120fps frame (8.3ms) — enough for UI responsiveness — while
- * giving CPU-bound background tasks on Little cores ~33% longer uninterrupted
- * runs than 12ms, saving the cache/TLB refill cost of each avoided context
- * switch.  Frame-thread wakeup latency is governed by wakeup_granularity and
- * EEVDF deadline/vruntime comparison, not by this, so lengthening it costs
- * the frame pipeline nothing.
- */
 unsigned int sysctl_sched_latency			= 16000000ULL;
 static unsigned int normalized_sysctl_sched_latency	= 16000000ULL;
 EXPORT_SYMBOL_GPL(sysctl_sched_latency);
