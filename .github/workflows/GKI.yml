@@ -59,7 +59,7 @@ on:
       ANYKERNEL_GIT:
         description: 'AnyKernel3 Git'
         required: true
-        default: 'https://github.com/dopaemon/Anykernel3.git'
+        default: 'https://github.com/LeanxModulostk/Anykernel33.git'
       RELEASE:
         description: 'Status Release'
         required: true
