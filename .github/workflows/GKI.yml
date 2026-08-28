@@ -50,7 +50,7 @@ on:
       BUILD_TARGET:
         description: 'Specify your Build Target (lindroid only KSU)'
         required: true
-        default: 'KSU'
+        default: 'NonKSU'
         type: choice
         options:
         - NonKSU
@@ -63,7 +63,7 @@ on:
       RELEASE:
         description: 'Status Release'
         required: true
-        default: 'prerelease'
+        default: 'release'
         type: choice
         options:
         - draft
@@ -136,15 +136,15 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.set-tag.outputs.tag }}
-          name: DoraCore Build ${{ steps.set-tag.outputs.tag }}
+          name: LeanCore Build ${{ steps.set-tag.outputs.tag }}
           draft: ${{ github.event.inputs.RELEASE == 'draft' }}
           prerelease: ${{ github.event.inputs.RELEASE == 'prerelease' }}
           body: |
-            Build: DoraCore Kernel For GKI Linux 5.10.y
+            Build: LeanCore Kernel For GKI Linux 5.10.y
             Linux: Linux 5.10.y
             Type: GKI
-            Developer: @dopaemon
-            Credits: @ArianK16a, @bachnxuan, @Gelbpunkt, @ztc1997, @pzqqt, @KernelToast, @Arter97, @ramabondanp, @Gosth15, @Flopster101, @bheatleyyy, @keosh1, @n08i40k, ...
+            Developer: @LeanHijosdesusMadres
+            Credits: @dopaemon, @ArianK16a, @bachnxuan, @Gelbpunkt, @ztc1997, @pzqqt, @KernelToast, @Arter97, @ramabondanp, @Gosth15, @Flopster101, @bheatleyyy, @keosh1, @n08i40k, ...
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -258,7 +258,7 @@ jobs:
           cd ./common/
           
           if [ "$TARGET" != "Both" ]; then
-             ZIP_NAME="DoraCore-${DEVICE}-KSU-5.10-A12-${BUILD_DATE}.zip"
+             ZIP_NAME="LeanCore-${DEVICE}-KSU-5.10-A12-${BUILD_DATE}.zip"
              cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
              cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
              zip -r9 "$ZIP_NAME" *
@@ -298,7 +298,7 @@ jobs:
           [ -f "$GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image" ] || { exit 1; }
 
           if [ "$TARGET" != "Both" ]; then
-             ZIP_NAME="DoraCore-${DEVICE}-NonKSU-5.10-A12-${BUILD_DATE}.zip"
+             ZIP_NAME="LeanCore-${DEVICE}-NonKSU-5.10-A12-${BUILD_DATE}.zip"
              cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
              cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
              zip -r9 "$ZIP_NAME" *
@@ -332,7 +332,7 @@ jobs:
           CC='ccache' LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh -j$(nproc --all) || true
           [ -f "$GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image" ] || { exit 1; }
 
-          ZIP_NAME="DoraCore-${DEVICE}-LinDroid-5.10-A12-${BUILD_DATE}.zip"
+          ZIP_NAME="LeanCore-${DEVICE}-LinDroid-5.10-A12-${BUILD_DATE}.zip"
           cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
           cp -r $GITHUB_WORKSPACE/android-kernel/out/android12-5.10/dist/Image ./Image
           zip -r9 "$ZIP_NAME" *
@@ -342,7 +342,7 @@ jobs:
         if: github.event.inputs.BUILD_TARGET == 'Both' && github.event.inputs.KERNEL_BRANCH != 'lindroid'
         run: |
           DEVICE="${{ matrix.device }}"
-          ZIP_NAME="DoraCore-${DEVICE}-5.10-A12-${BUILD_DATE}.zip"
+          ZIP_NAME="LeanCore-${DEVICE}-5.10-A12-${BUILD_DATE}.zip"
           cd $GITHUB_WORKSPACE/android-kernel/AnyKernel3
           zip -r9 "$ZIP_NAME" *
           mv "$ZIP_NAME" $GITHUB_WORKSPACE/
@@ -351,6 +351,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.create_release.outputs.tag }}
-          files: DoraCore*.zip
+          files: LeanCore*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
