@@ -22,6 +22,7 @@ static struct binder_priority home_saved_priority = {SCHED_NORMAL, 120};
 static const char *task_name[] = {
 	"com.miui.home",
 	".globallauncher",  // com.mi.android.globallauncher
+	"ndroid.launcher",
 	"ndroid.systemui",  // com.android.systemui
 	// "surfaceflinger",
 	"cameraserver",
@@ -49,7 +50,7 @@ static bool set_binder_rt_task(struct binder_transaction *t) {
 			return false;
 		}
 
-		if (!strncmp(from_task_gl_comm, "com.miui.home", strlen("com.miui.home")) &&
+		if (!strncmp(from_task_gl_comm, "ndroid.launcher", strlen("ndroid.launcher")) &&
 		    !strncmp(from_task_comm, "RenderThread", strlen("RenderThread")) &&
 		    !strncmp(t->to_proc->tsk->comm, "surfaceflinger", strlen("surfaceflinger")))
 			goto yes_and_exit;
@@ -118,7 +119,7 @@ static void extend_surfacefinger_binder_trans_handler(void *data, struct binder_
 				target_proc->default_priority.sched_policy = SCHED_FIFO;
 				target_proc->default_priority.prio = 98;
 			}
-		} else if (strncmp(target_proc->tsk->comm, "com.miui.home", strlen("com.miui.home")) == 0) {
+		} else if (strncmp(target_proc->tsk->comm, "ndroid.launcher", strlen("ndroid.launcher")) == 0) {
 			if (rt_policy(target_proc->tsk->policy)) {
 				if (!rt_policy(target_proc->default_priority.sched_policy)) {
 					home_saved_priority = target_proc->default_priority;
