@@ -26,7 +26,6 @@ static const char *task_name[] = {
 	// "surfaceflinger",
 	"cameraserver",
 	"rsonalassistant",  // com.miui.personalassistant
-	"lofduty.shooter",
 };
 
 static int to_userspace_prio(int policy, int kernel_priority) {
